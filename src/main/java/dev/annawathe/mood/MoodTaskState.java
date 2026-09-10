@@ -30,13 +30,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static dev.doctor4t.wathe.game.GameConstants.getInTicks;
+
 /**
  * 附着在原版 PlayerMoodComponent 上的 AnnaWathe 任务状态。
  * 服务端是任务进度和心情的唯一权威；客户端副本只用于平滑 HUD 和读取任务 ID。
  */
 public final class MoodTaskState {
     public static final int MAX_TASKS = 3;
-    public static final int TASK_DURATION = 8 * 20;
+    public static final int TASK_DURATION = getInTicks(0, 8);
     /**
      * 完成一个真实心情任务回复的心情值。
      * 固定采用自改 Wathe 的 0.4，不读取原版 Wathe 1.3.2 的 0.5，避免单次任务回复过多。
@@ -46,7 +48,8 @@ public final class MoodTaskState {
      * 有任意任务时每 tick 的基础心情下降值。
      * 1 / 4000 表示持续约 3 分 20 秒会从满心情降到零；多任务仍只扣一份。
      */
-    public static final float MOOD_DRAIN = 1F / (3 * 60 * 20 + 20 * 20);
+    //public static final float MOOD_DRAIN = 1F / (3 * 60 * 20 + 20 * 20);
+    public static final float MOOD_DRAIN = 1F / getInTicks(3, 20);
     public static final float SECOND_TASK_THRESHOLD = 0.51F;
     public static final float THIRD_TASK_THRESHOLD = 0.17F;
     public static final float BREAKDOWN_WARNING_THRESHOLD = 0.15F;
