@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "annawathe",
+  "version": "${version}",
+  "name": "AnnaWathe",
+  "description": "Extension framework for the original Wathe.",
+  "authors": ["annawathe"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.annawathe.AnnaWathe"],
+    "client": ["dev.annawathe.client.AnnaWatheClient"],
+    "cardinal-components": ["dev.annawathe.cca.AnnaWatheComponents"]
+  },
+  "mixins": ["annawathe.mixins.json", "annawathe.harpy.mixins.json", {"config":"annawathe.client.mixins.json", "environment":"client"}],
+  "custom": {
+    "cardinal-components": [
+      "annawathe:instinct",
+      "annawathe:round_state"
+    ]
+  },
+  "depends": {"fabricloader": ">=${loader_version}", "fabric-api": "*", "minecraft": "${minecraft_version}", "wathe": ">=1.3.2-1.21.1"}
+}

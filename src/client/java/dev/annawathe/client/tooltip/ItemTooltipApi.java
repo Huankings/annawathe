@@ -1,0 +1,16 @@
+package dev.annawathe.client.tooltip;
+import dev.annawathe.client.mixin.ItemCooldownAccessor; import dev.annawathe.client.mixin.ItemCooldownEntryAccessor; import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback; import net.minecraft.client.MinecraftClient; import net.minecraft.entity.player.ItemCooldownManager; import net.minecraft.entity.player.PlayerEntity; import net.minecraft.item.*; import net.minecraft.item.tooltip.TooltipType; import net.minecraft.text.*; import net.minecraft.util.Identifier; import net.minecraft.client.resource.language.I18n; import java.util.*;
+/** 客户端物品描述 API：冷却直接读取当前条目，避免动态冷却显示错误。 */
+public final class ItemTooltipApi { public static final int COOLDOWN_COLOR=0xC90000,REGULAR_TOOLTIP_COLOR=0x808080; private static final Set<Item> ITEMS=new HashSet<>();private static final List<Entry> APPENDERS=new ArrayList<>();private static boolean initialized;private static long order;private ItemTooltipApi(){}
+ public static synchronized void initialize(){if(!initialized){initialized=true;ItemTooltipCallback.EVENT.register(ItemTooltipApi::append);}}
+ public static synchronized void registerItem(Item i){initialize();ITEMS.add(Objects.requireNonNull(i));} public static synchronized void registerItems(Item...is){initialize();for(Item i:is)registerItem(i);}
+ public static synchronized void registerAppender(Identifier id,int priority,Item item,TooltipAppender app){initialize();APPENDERS.removeIf(e->e.id.equals(id));APPENDERS.add(new Entry(id,priority,order++,item,app));APPENDERS.sort(Comparator.comparingInt((Entry e)->e.priority).thenComparingLong(e->e.order));}
+ /**
+  * 直接读取 ItemCooldownManager 当前条目，而不是用固定总冷却或冷却进度反推。
+  * Accessor 会在生产环境正确重映射字段名，避免反射查找 endTick 失败后倒计时始终为 0。
+  */
+ public static int getRemainingCooldownTicks(PlayerEntity p,Item i){if(p==null)return 0;ItemCooldownManager m=p.getItemCooldownManager();Object e=((ItemCooldownAccessor)m).annawathe$entries().get(i);if(e==null)return 0;return Math.max(0,((ItemCooldownEntryAccessor)e).annawathe$endTick()-((ItemCooldownAccessor)m).annawathe$tick());}
+ public static String formatCooldownTicks(int ticks){if(ticks<=0)return "";int s=Math.max(1,(ticks+19)/20),m=s/60;return (m>0?m+"m":"")+(s%60>0?s%60+"s":"");}
+ private static void append(ItemStack stack,Item.TooltipContext tc,TooltipType type,List<Text> out){Item i=stack.getItem();MinecraftClient c=MinecraftClient.getInstance();PlayerEntity p=c.player;if(ITEMS.contains(i)){int t=getRemainingCooldownTicks(p,i);if(t>0)out.add(Text.translatable("tip.cooldown",formatCooldownTicks(t)).withColor(COOLDOWN_COLOR));String key=i.getTranslationKey()+".tooltip";if(I18n.hasTranslation(key))for(String line:I18n.translate(key).split("\\n"))out.add(Text.literal(line).setStyle(Style.EMPTY.withColor(REGULAR_TOOLTIP_COLOR)));}Context x=new Context(c,p,stack,tc,type,out);for(Entry e:List.copyOf(APPENDERS))if(e.item==i)e.app.append(x);}
+ public record Context(MinecraftClient client,PlayerEntity player,ItemStack stack,Item.TooltipContext tooltipContext,TooltipType tooltipType,List<Text> tooltip){}@FunctionalInterface public interface TooltipAppender{void append(Context c);}private record Entry(Identifier id,int priority,long order,Item item,TooltipAppender app){}
+}

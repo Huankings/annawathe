@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.annawathe.mixin.compat",
+  "plugin": "dev.annawathe.mixin.compat.AnnaHarpyMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["HarpyNeutralForceRoleMixin", "HarpyForceRoleBookkeepingMixin"],
+  "injectors": {"defaultRequire": 1}
+}
