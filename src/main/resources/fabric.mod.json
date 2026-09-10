@@ -16,7 +16,9 @@
   "custom": {
     "cardinal-components": [
       "annawathe:instinct",
-      "annawathe:round_state"
+      "annawathe:round_state",
+      "annawathe:mood_settings",
+      "annawathe:task_points"
     ]
   },
   "depends": {"fabricloader": ">=${loader_version}", "fabric-api": "*", "minecraft": "${minecraft_version}", "wathe": ">=1.3.2-1.21.1"}

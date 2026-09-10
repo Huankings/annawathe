@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.annawathe.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["MurderGameModeMixin", "GameRoundEndComponentMixin", "GameFunctionsMixin"],
+  "mixins": ["MurderGameModeMixin", "GameRoundEndComponentMixin", "GameFunctionsMixin", "PlayerMoodComponentMixin"],
   "injectors": {"defaultRequire": 1}
 }

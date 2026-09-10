@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.annawathe.client.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["WatheClientMixin", "RoundTextRendererMixin", "WatheItemTooltipsMixin", "ItemCooldownAccessor", "ItemCooldownEntryAccessor"],
+  "mixins": ["WatheClientMixin", "RoundTextRendererMixin", "WatheItemTooltipsMixin", "ItemCooldownAccessor", "ItemCooldownEntryAccessor", "MoodRendererMixin", "DrawContextAccessor"],
   "injectors": {"defaultRequire": 1}
 }

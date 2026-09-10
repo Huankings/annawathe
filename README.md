@@ -36,8 +36,18 @@ annawathe/
 - `CustomVictory` / `CustomVictoryGroup`：独立胜利数据、颜色、翻译和赢家 UUID；
 - `ItemTooltipApi`：多行物品描述、真实冷却条目读秒、动态追加文本；
 - `AnnaRoundTextRenderer`：欢迎公告、普通/独立/Loose Ends 结算重绘。
+- `MoodTaskApi`：Identifier 任务注册、多任务发放/删除/完成和优先级拦截；
+- `MoodTaskPointApi`：任务点类型、地图扫描扩展和客户端穿墙透视；
+- `MoodHudApi`：普通/职业色/疯魔 Mood HUD 样式；
+- 精神崩溃死亡、调试指令，以及 shift/run/sit/stay/away 五个额外任务。
 
-具体职业胜利规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。商店、体力、移动、任务、停电、雾效、疯魔等自改 Wathe API 不属于当前 AnnaWathe 范围。
+心情数值采用自改 Wathe 的节奏，而不是原版 1.3.2 的数值：只要存在任意任务，每 tick
+下降 `1 / 4000`（约 3 分 20 秒从满值降到零），完成一个真实心情任务回复 `0.4`。
+同时存在多个任务时不会按任务数量倍增下降速度。
+
+具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。商店、体力、停电、雾效和服务端 Psycho profile 等其它自改 Wathe API 不属于当前范围。
+
+心情与任务接口详见 `README_MOOD_TASK_API.md`。
 
 ## 本能 API
 

@@ -37,6 +37,9 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - `src/main/java/dev/annawathe/api/instinct/InstinctApi.java`：本能注册/解析。
 - `src/main/java/dev/annawathe/api/win/VictoryApi.java`：胜利仲裁。
 - `src/main/java/dev/annawathe/api/win/CustomVictory.java`：独立胜利数据。
+- `src/main/java/dev/annawathe/api/task/MoodTaskApi.java`：任务注册、发放、删除和完成。
+- `src/main/java/dev/annawathe/api/task/MoodTaskPointApi.java`：任务点注册与扫描扩展。
+- `src/main/java/dev/annawathe/mixin/PlayerMoodComponentMixin.java`：原版 mood CCA 桥接和任务循环接管。
 - `src/main/java/dev/annawathe/cca/PlayerInstinctComponent.java`：按键模式组件。
 - `src/main/java/dev/annawathe/cca/AnnaRoundEndState.java`：结算旁路状态。
 - `src/main/java/dev/annawathe/cca/AnnaWatheComponents.java`：CCA factory。
@@ -44,6 +47,8 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - `src/client/java/dev/annawathe/client/AnnaWatheClient.java`：客户端初始化和默认本能规则。
 - `src/client/java/dev/annawathe/client/gui/AnnaRoundTextRenderer.java`：完整结算 renderer。
 - `src/client/java/dev/annawathe/api/client/tooltip/ItemTooltipApi.java`：扩展使用的 Tooltip 门面。
+- `src/client/java/dev/annawathe/api/client/mood/MoodHudApi.java`：职业 Mood/疯魔 HUD 样式入口。
+- `src/client/java/dev/annawathe/client/gui/AnnaMoodRenderer.java`：唯一 Mood renderer。
 - `src/main/resources/fabric.mod.json`：入口、依赖、CCA 元数据。
 
 ### 原版 Wathe 对照
@@ -85,6 +90,18 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - Tooltip 是客户端显示层，不作为服务端合法性判断。
 - 不要为同一物品重复注册全局 `ItemTooltipCallback`。
 
+### Mood 与任务
+
+- 新任务实现 `MoodTaskInstance`，通过 `MoodTaskApi.registerTask` 注册稳定 ID；不要修改原版 Task 枚举。
+- 扩展任务默认不进入随机池，需要时显式调用 `randomlyAssignable()`。
+- `removeTask` 只是删除；`completeTask` 才会回复心情并触发完成事件。
+- 心情基础数值固定采用自改 Wathe：每 tick 下降 `1 / 4000`，任务完成回复 `0.4`；不得重新读取原版 `GameConstants.MOOD_DRAIN/MOOD_GAIN`。
+- 多任务只共享一份基础心情下降，禁止再按当前任务数量乘算掉落速度。
+- 服务端是任务进度唯一权威；客户端任务数据只用于 HUD 和任务点过滤。
+- 普通、职业色和疯魔 HUD 使用 `MoodHudApi`，禁止继续 Mixin 原版 `MoodRenderer`。
+- 颜色可能来自 `Color#getRGB()` 时必须用 `MoodHudColors.withAlpha` 重写 alpha，不能按位 OR。
+- 任务点扫描 handler 只判断当前格，不得自行全图扫描。
+
 ## CCA 规则
 
 当前组件：
@@ -93,6 +110,8 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 | --- | --- | --- |
 | `PlayerInstinctComponent` | `annawathe:instinct` | 玩家；CHARACTER 重生复制。 |
 | `AnnaRoundEndState` | `annawathe:round_state` | World/Scoreboard；保存独立胜利和额外赢家。 |
+| `AnnaMoodSettings` | `annawathe:mood_settings` | World；精神崩溃死亡开关。 |
+| `AnnaTaskPointWorldState` | `annawathe:task_points` | World；任务点缓存与自动重扫设置。 |
 
 新增组件必须：
 

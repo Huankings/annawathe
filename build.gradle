@@ -13,6 +13,7 @@ repositories {
     maven { name = "Ladysnake Mods"; url = 'https://maven.ladysnake.org/releases' }
     maven { name = "Xander Maven"; url = 'https://maven.isxander.dev/releases' }
     maven { name = "Modrinth"; url = 'https://api.modrinth.com/maven' }
+    maven { name = "Datasync"; url = 'https://maven.uuid.gg/releases' }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -24,6 +25,10 @@ dependencies {
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-world:${project.cca_version}"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-scoreboard:${project.cca_version}"
+    // 原版 Wathe 的运行时代码直接引用 Ratatouille；开发启动也必须把它放入运行类路径。
+    modImplementation "dev.doctor4t:ratatouille:${project.ratatouille_version}"
+    // libs 中的开发版 Wathe jar 未内嵌 MidnightLib，runClient 需要显式补入；不打进 AnnaWathe 产物。
+    modRuntimeOnly "maven.modrinth:midnightlib:${project.midnightlib_version}"
 }
 processResources {
     inputs.property "version", project.version

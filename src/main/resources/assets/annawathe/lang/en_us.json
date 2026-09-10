@@ -1,5 +1,25 @@
 {
   "annawathe.instinct.toggle": "Instinct mode: toggle",
   "annawathe.instinct.hold": "Instinct mode: hold",
-  "announcement.title.neutral": "Neutral"
+  "announcement.title.neutral": "Neutral",
+  "annawathe.task.feel": "You feel like ",
+  "annawathe.task.fake": "You could fake ",
+  "annawathe.task.shift": "crouching for a bit.",
+  "annawathe.task.run": "going for a run.",
+  "annawathe.task.sit": "sitting down for a bit.",
+  "annawathe.task.stay": "staying still.",
+  "annawathe.task.away": "staying away from other people.",
+  "annawathe.task.unknown": "completing an unknown task.",
+  "annawathe.hud.mood.breakdown_warning": "MENTAL BREAKDOWN IMMINENT",
+  "annawathe.hud.task_point.toggle.enabled": "Task point overlay enabled",
+  "annawathe.hud.task_point.toggle.disabled": "Task point overlay disabled",
+  "annawathe.hud.task_point.bed": "Bed",
+  "annawathe.hud.task_point.food_tray": "Food tray",
+  "annawathe.hud.task_point.cocktail_tray": "Cocktail tray",
+  "annawathe.hud.task_point.seat": "Seat",
+  "annawathe.hud.task_point.keyed_door": "Matching door",
+  "annawathe.hud.task_point.unknown": "Unknown task point",
+  "key.annawathe.task_points": "Task point overlay",
+  "replay.death.wathe.mental_breakdown.died": "%s died of mental breakdown",
+  "death_reason.wathe.mental_breakdown": "mental breakdown"
 }

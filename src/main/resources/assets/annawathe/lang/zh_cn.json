@@ -1,5 +1,25 @@
 {
   "annawathe.instinct.toggle": "你的本能键模式：按一下开关",
   "annawathe.instinct.hold": "你的本能键模式：长按生效",
-  "announcement.title.neutral": "中立"
+  "announcement.title.neutral": "中立",
+  "annawathe.task.feel": "你觉得应该",
+  "annawathe.task.fake": "你可以假装",
+  "annawathe.task.shift": "蹲一下",
+  "annawathe.task.run": "去跑步",
+  "annawathe.task.sit": "去坐一下",
+  "annawathe.task.stay": "保持不动",
+  "annawathe.task.away": "离人远一点",
+  "annawathe.task.unknown": "完成一个未知任务",
+  "annawathe.hud.mood.breakdown_warning": "精神即将崩溃",
+  "annawathe.hud.task_point.toggle.enabled": "任务点透视已开启",
+  "annawathe.hud.task_point.toggle.disabled": "任务点透视已关闭",
+  "annawathe.hud.task_point.bed": "床位",
+  "annawathe.hud.task_point.food_tray": "食物托盘",
+  "annawathe.hud.task_point.cocktail_tray": "鸡尾酒托盘",
+  "annawathe.hud.task_point.seat": "座位",
+  "annawathe.hud.task_point.keyed_door": "对应房门",
+  "annawathe.hud.task_point.unknown": "未知任务点",
+  "key.annawathe.task_points": "任务点透视",
+  "replay.death.wathe.mental_breakdown.died": "%s 死于精神崩溃",
+  "death_reason.wathe.mental_breakdown": "精神崩溃"
 }
