@@ -2,12 +2,15 @@ package dev.annawathe.client;
 
 import dev.annawathe.AnnaWathe;
 import dev.annawathe.api.instinct.InstinctApi;
+import dev.annawathe.api.client.appearance.RoleNameApi;
+import dev.annawathe.api.client.appearance.PlayerAppearanceApi;
 import dev.annawathe.client.gui.AnnaMoodRenderer;
 import dev.annawathe.client.gui.AnnaRoundTextRenderer;
 import dev.annawathe.client.task.TaskPointClientState;
 import dev.annawathe.client.task.TaskPointOverlayRenderer;
 import dev.annawathe.client.tooltip.ItemTooltipApi;
 import dev.annawathe.cca.PlayerInstinctComponent;
+import dev.annawathe.cca.PlayerAppearanceOverrideComponent;
 import dev.annawathe.network.TaskPointSyncPayload;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -41,6 +44,7 @@ public final class AnnaWatheClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         registerDefaultInstinctRules();
+        registerTransformNameRule();
         ItemTooltipApi.initialize();
         ItemTooltipApi.registerItems(WatheItems.KNIFE, WatheItems.REVOLVER, WatheItems.DERRINGER, WatheItems.GRENADE,
                 WatheItems.PSYCHO_MODE, WatheItems.POISON_VIAL, WatheItems.SCORPION, WatheItems.FIRECRACKER,
@@ -53,6 +57,7 @@ public final class AnnaWatheClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(TaskPointOverlayRenderer::render);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             TaskPointClientState.clear(); AnnaMoodRenderer.reset(); instinctToggleActive = false;
+            dev.annawathe.client.psychosis.AnnaPsychosisVisualState.clearAll();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -67,6 +72,15 @@ public final class AnnaWatheClient implements ClientModInitializer {
                             .formatted(enabled ? Formatting.GREEN : Formatting.RED), true);
                 }
             } else instinctToggleActive = false;
+        });
+    }
+
+    private static void registerTransformNameRule() {
+        RoleNameApi.registerName(AnnaWathe.id("transform_name"), 50, (viewer, target, original) -> {
+            var state = PlayerAppearanceOverrideComponent.KEY.get(target);
+            if (!state.isActive() || state.getTargetUuid() == null || state.getTargetUuid().equals(target.getUuid())) return null;
+            String name = PlayerAppearanceApi.resolveOriginalPlayerName(state.getTargetUuid());
+            return name == null ? original : Text.literal(name);
         });
     }
 

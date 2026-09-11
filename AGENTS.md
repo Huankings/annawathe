@@ -39,6 +39,15 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - `src/main/java/dev/annawathe/api/win/CustomVictory.java`：独立胜利数据。
 - `src/main/java/dev/annawathe/api/task/MoodTaskApi.java`：任务注册、发放、删除和完成。
 - `src/main/java/dev/annawathe/api/task/MoodTaskPointApi.java`：任务点注册与扫描扩展。
+- `src/main/java/dev/annawathe/api/PlayerLifeStateApi.java`：creative/spectator 仍按局内存活处理。
+- `src/main/java/dev/annawathe/api/movement/PlayerMovementApi.java`：玩家速度修正规则链（当前不包含体力系统）。
+- `src/main/java/dev/annawathe/api/collision/PlayerCollisionApi.java`：SOLID、VANILLA_PUSH、NO_COLLISION 碰撞规则。
+- `src/main/java/dev/annawathe/api/appearance/BodyAppearanceApi.java`：服务端尸体视觉外观解析。
+- `src/main/java/dev/annawathe/api/appearance/PlayerTransformApi.java`：持久化调试变形服务端门面。
+- `src/main/java/dev/annawathe/api/client/appearance/RoleNameApi.java`：客户端准心名称覆盖。
+- `src/client/java/dev/annawathe/api/client/appearance/PlayerAppearanceApi.java`：玩家/尸体皮肤解析。
+- `src/client/java/dev/annawathe/api/client/invisibility/HeldItemInvisibilityApi.java`：手持物隐藏。
+- `src/client/java/dev/annawathe/api/client/mood/PsychosisItemApi.java`：幻觉物品与手臂姿势 provider。
 - `src/main/java/dev/annawathe/mixin/PlayerMoodComponentMixin.java`：原版 mood CCA 桥接和任务循环接管。
 - `src/main/java/dev/annawathe/cca/PlayerInstinctComponent.java`：按键模式组件。
 - `src/main/java/dev/annawathe/cca/AnnaRoundEndState.java`：结算旁路状态。
@@ -112,6 +121,9 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 | `AnnaRoundEndState` | `annawathe:round_state` | World/Scoreboard；保存独立胜利和额外赢家。 |
 | `AnnaMoodSettings` | `annawathe:mood_settings` | World；精神崩溃死亡开关。 |
 | `AnnaTaskPointWorldState` | `annawathe:task_points` | World；任务点缓存与自动重扫设置。 |
+| `PlayerLifeStateComponent` | `annawathe:life_state` | Player；creative/spectator 特殊玩法存活授权，NEVER_COPY。 |
+| `PlayerAppearanceOverrideComponent` | `annawathe:appearance_override` | Player；调试变形目标、永久/有限到期时间，CHARACTER。 |
+| `AnnaCollisionSettings` | `annawathe:collision_settings` | World；玩家碰撞开关、开局免碰撞秒数、本局起点。 |
 
 新增组件必须：
 
@@ -121,6 +133,12 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 4. 需要时同步；
 5. 在 `fabric.mod.json` 的 `custom.cardinal-components` 添加 ID；
 6. 补充开局、停局、重生、断线清理。
+
+新增组件边界：
+
+- `life_state` 只改变 Anna/Wathe 的玩法存活判断，不改变原版 creative/spectator 权限或物品消耗规则；普通 `/gamemode` 会撤销授权。
+- `appearance_override` 是管理员调试外观，不改变职业、阵营、声音、手持物、碰撞或服务端攻击判定；永久状态必须由 `/annawathe:transform clear` 或 `clearAll` 清除。
+- `collision_settings` 的起点必须记录在真正进入 `ACTIVE` 后，不能按执行 `/start` 的时间计算；修改开关/秒数后要立即同步客户端。
 
 遗漏元数据会导致 `was not registered through mod metadata or plugin` 启动崩溃。
 
@@ -143,6 +161,14 @@ private void handler(
 
 改 Mixin 后必须核对目标 descriptor、目标调用次数和局部变量类型，并做完整构建和进世界测试。
 
+新增机制的 Mixin 边界：
+
+- `Entity#collidesWith`、`EntityView#getEntityCollisions`、`Entity#pushAwayFrom`、`LivingEntity#pushAway` 统一询问 `PlayerCollisionApi`；扩展职业不要重复注入这些底层入口。
+- `GameFunctions.isPlayerAliveAndSurvival`、`isPlayerSpectatingOrCreative`、`isPlayerEliminated` 必须与 `PlayerLifeStateApi` 一致；不要把所有原版 `isCreative()`/`isSpectator()` 全局替换。
+- 尸体外观在 `GameFunctions.killPlayer` 的 `spawnEntity` 前解析，`PlayerBodyEntity` 的真实 owner UUID 不能改成 appearance UUID。
+- 玩家皮肤、尸体纹理、手持物和幻觉都是客户端显示层；服务端攻击、交互、购买和职业判断不能读取这些视觉结果。
+- `BodyRendererDispatchMixin` 自己维护尸体 slim/wide renderer map，不得 Shadow 原版 Wathe 私有 Mixin 字段，避免加载顺序导致启动崩溃。
+
 ## 结算 renderer 规则
 
 `AnnaRoundTextRenderer` 是唯一结算 renderer。它负责动态列数、区域定位、职业标题、头像、死亡标记、文本缩放和独立胜利布局。
@@ -153,6 +179,31 @@ private void handler(
 - 文字必须自动缩放/截断，不能重叠。
 - 标题绘制必须先 `scale` 再使用局部 y；不要先 translate y 再 scale。
 - 验证普通胜利、独立胜利、Loose Ends、多人数和窄窗口。
+
+## 玩家存活、碰撞、外观与视觉调试指令
+
+本轮已迁移的管理员调试入口均要求权限等级 2：
+
+- `/annawathe:gamemode <mode> [player]`：以玩法存活语义切换 creative/spectator；无本局职业的玩家不能获得特殊存活授权。
+- `/annawathe:playerCollision [true|false]`：查询或修改局内存活玩家碰撞总开关。
+- `/annawathe:startnoCollision [seconds]`：查询或修改 ACTIVE 开始后的免碰撞时间。
+- `/annawathe:transform <player> <appearance> <seconds|permanent>`：单个在线玩家变形。
+- `/annawathe:transform all <appearance> <seconds|permanent>`：当前服务器全部其它在线玩家变形。
+- `/annawathe:transform clear <player>`、`clearAll`、`query <player>`：解除或查询持久化变形。
+
+调试变形只覆盖普通玩家皮肤和准心名称。职业伪装、幻觉视角、灵术师/时间狭缝等更高优先级视觉规则可以覆盖它；变形不会改变职业、阵营、声音、手持物、碰撞或服务端身份。有限时间使用秒作为指令单位，永久状态跨死亡、回合、重启保存，直到显式清除。
+
+### 视觉 API 的客户端边界
+
+- `PlayerAppearanceApi` 返回的皮肤只影响客户端模型、披风和尸体 renderer。
+- `RoleNameApi` 只改变准心显示文本，不改变聊天、语音或服务端玩家名。
+- `HeldItemInvisibilityApi` 只隐藏其它局内存活玩家看到的模型；本人 F5、死亡/普通旁观视角和真实服务端物品不受影响。
+- `PsychosisItemApi` 的物品和 ArmPose 只存在观察者客户端缓存；死亡、停局、reset、断线必须清空。
+- `BodyAppearanceApi` 返回的是尸体视觉 UUID，真实 owner UUID 必须保留给验尸、尸袋、回放和死亡判定。
+
+### 当前速度迁移范围
+
+`PlayerMovementApi` 只提供速度修正规则链：`ADD`、`MULTIPLY`、`OVERRIDE`、`PASS`。当前不包含自改 Wathe 的 `PlayerStaminaApi`、体力消耗、心情体力惩罚或跳跃限制；后续若增加体力，必须单独增加 CCA、同步和生命周期清理，不要把体力字段偷偷塞进速度 API。
 
 ## 扩展迁移模板
 

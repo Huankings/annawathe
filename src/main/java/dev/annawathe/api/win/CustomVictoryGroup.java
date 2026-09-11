@@ -1,5 +1,6 @@
 package dev.annawathe.api.win;
 import net.minecraft.entity.player.PlayerEntity; import net.minecraft.nbt.*; import net.minecraft.util.Identifier; import java.util.*;
+/** 独立胜利分组数据，供结算同步和客户端布局使用。 */
 public record CustomVictoryGroup(String titleTranslationKey,String fallbackTitle,int color,List<UUID> playerUuids){
  public CustomVictoryGroup{playerUuids=List.copyOf(playerUuids);}
  public boolean contains(UUID id){return id!=null&&playerUuids.contains(id);}

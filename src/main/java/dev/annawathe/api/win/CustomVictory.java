@@ -1,5 +1,6 @@
 package dev.annawathe.api.win;
 import net.minecraft.entity.player.PlayerEntity; import net.minecraft.nbt.*; import net.minecraft.util.Identifier; import java.util.*;
+/** 独立胜利的不可变数据；赢家只存 UUID，避免保存运行时 Player 实例。 */
 public record CustomVictory(Identifier id,String announcementTranslationKey,String detailTranslationKey,String fallbackTitle,int color,List<UUID> winnerUuids,CustomVictoryGroup winnerGroup){
  public CustomVictory{winnerUuids=List.copyOf(winnerUuids);}
  public boolean isWinner(UUID u){return u!=null&&winnerUuids.contains(u);}

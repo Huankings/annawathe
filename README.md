@@ -39,6 +39,13 @@ annawathe/
 - `MoodTaskApi`：Identifier 任务注册、多任务发放/删除/完成和优先级拦截；
 - `MoodTaskPointApi`：任务点类型、地图扫描扩展和客户端穿墙透视；
 - `MoodHudApi`：普通/职业色/疯魔 Mood HUD 样式；
+- `PlayerLifeStateApi`：creative/spectator 仍按局内存活处理；
+- `PlayerMovementApi`：速度 ADD/MULTIPLY/OVERRIDE/PASS 修正规则；
+- `PlayerCollisionApi`：SOLID、VANILLA_PUSH、NO_COLLISION 玩家碰撞规则；
+- `PlayerAppearanceApi` / `BodyAppearanceApi`：玩家与尸体皮肤覆盖；
+- `RoleNameApi`：准心玩家名称覆盖；
+- `HeldItemInvisibilityApi` / `PsychosisItemApi`：手持物隐藏与低心情幻觉物品/手臂姿势；
+- `PlayerTransformApi`：跨回合、重生和重启保存的调试外观变形；
 - 精神崩溃死亡、调试指令，以及 shift/run/sit/stay/away 五个额外任务。
 
 心情数值采用自改 Wathe 的节奏，而不是原版 1.3.2 的数值：只要存在任意任务，每 tick
@@ -46,6 +53,17 @@ annawathe/
 同时存在多个任务时不会按任务数量倍增下降速度。
 
 具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。商店、体力、停电、雾效和服务端 Psycho profile 等其它自改 Wathe API 不属于当前范围。
+
+本轮新增的相关调试指令均要求权限等级 2：
+
+- `/annawathe:gamemode <mode> [player]`：以“玩法存活”语义切换 creative/spectator；
+- `/annawathe:playerCollision [true|false]`：查询或切换局内存活玩家碰撞；
+- `/annawathe:startnoCollision [seconds]`：查询或设置开局免碰撞时间；
+- `/annawathe:transform <player> <appearance> <seconds|permanent>`：让一名玩家变成另一名在线玩家的外观；
+- `/annawathe:transform all <appearance> <seconds|permanent>`：让当前服务器所有其它在线玩家变成指定外观；
+- `/annawathe:transform clear <player>`、`/annawathe:transform clearAll`：清除变形。
+
+调试变形只覆盖普通外观和准心名称，不改变职业、阵营、声音、物品、碰撞或服务端身份，并且低于扩展职业和特殊视角外观规则。`PlayerMovementApi` 只迁移速度修正，不包含自改 Wathe 的完整体力系统。
 
 心情与任务接口详见 `README_MOOD_TASK_API.md`。
 
@@ -121,6 +139,9 @@ AnnaWathe 已禁用原版 Wathe Tooltip callback，其他扩展不要为同类�
 | --- | --- | --- |
 | `PlayerInstinctComponent` | `annawathe:instinct` | 玩家本能按键模式。 |
 | `AnnaRoundEndState` | `annawathe:round_state` | 独立胜利和额外赢家 UUID。 |
+| `PlayerLifeStateComponent` | `annawathe:life_state` | creative/spectator 特殊玩法存活授权。 |
+| `PlayerAppearanceOverrideComponent` | `annawathe:appearance_override` | 持久化调试外观变形目标与到期时间。 |
+| `AnnaCollisionSettings` | `annawathe:collision_settings` | 玩家碰撞总开关、开局免碰撞时间和本局起点。 |
 
 新组件必须同时完成 factory、NBT、同步/清理，并在 `fabric.mod.json` 的 `custom.cardinal-components` 声明 ID。否则会出现 `was not registered through mod metadata or plugin`。
 

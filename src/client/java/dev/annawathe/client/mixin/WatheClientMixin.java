@@ -1,5 +1,6 @@
 package dev.annawathe.client.mixin;
 import dev.annawathe.api.instinct.InstinctApi; import net.minecraft.client.MinecraftClient; import net.minecraft.entity.Entity; import org.spongepowered.asm.mixin.Mixin; import org.spongepowered.asm.mixin.injection.*; import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+/** 把原版本能开关和描边解析转交给 Anna 的优先级规则链。 */
 @Mixin(dev.doctor4t.wathe.client.WatheClient.class)
 public abstract class WatheClientMixin {
  @Inject(method="isInstinctEnabled",at=@At("HEAD"),cancellable=true) private static void annawathe$enabled(CallbackInfoReturnable<Boolean> cir){var p=MinecraftClient.getInstance().player;if(p!=null)cir.setReturnValue(InstinctApi.resolveAvailability(p)==InstinctApi.AvailabilityResult.ENABLE);}

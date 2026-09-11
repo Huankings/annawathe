@@ -57,6 +57,7 @@ public abstract class PlayerMoodComponentMixin implements MoodTaskBridge {
         if (!game.isRunning() || !GameFunctions.isPlayerAliveAndSurvival(player)) psychosisItems.clear();
     }
 
+
     @Redirect(method = "clientTick", at = @At(value = "INVOKE", target = "Ldev/doctor4t/wathe/cca/PlayerMoodComponent;setMood(F)V"))
     private void annawathe$preventVanillaClientDrain(PlayerMoodComponent instance, float ignoredMood) {
         // 本地预测已按“任意数量任务只扣一份”执行；阻止原版再次按 enum Map 大小重复扣除。

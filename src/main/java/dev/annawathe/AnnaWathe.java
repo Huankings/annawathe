@@ -4,6 +4,12 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.annawathe.cca.PlayerInstinctComponent;
 import dev.annawathe.command.MoodCommands;
+import dev.annawathe.command.GameplayAliveGameModeCommand;
+import dev.annawathe.command.PlayerCollisionCommand;
+import dev.annawathe.command.StartNoCollisionCommand;
+import dev.annawathe.command.PlayerTransformCommand;
+import dev.annawathe.cca.PlayerAppearanceOverrideComponent;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import dev.annawathe.network.TaskPointSyncPayload;
 import dev.annawathe.task.TaskPointSyncManager;
 import net.fabricmc.api.ModInitializer;
@@ -25,12 +31,17 @@ public final class AnnaWathe implements ModInitializer {
         TaskPointSyncManager.initialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MoodCommands.register(dispatcher);
+            GameplayAliveGameModeCommand.register(dispatcher);
+            PlayerCollisionCommand.register(dispatcher);
+            StartNoCollisionCommand.register(dispatcher);
+            PlayerTransformCommand.register(dispatcher);
             dispatcher.register(CommandManager.literal("instinct")
                     .then(CommandManager.literal("key").then(CommandManager.argument("toggleMode", BoolArgumentType.bool())
                             .executes(ctx -> setMode(ctx.getSource(), BoolArgumentType.getBool(ctx, "toggleMode"))))
                             .executes(ctx -> queryMode(ctx.getSource())))
                     .executes(ctx -> queryMode(ctx.getSource())));
         });
+        ServerTickEvents.END_SERVER_TICK.register(server -> server.getPlayerManager().getPlayerList().forEach(player -> PlayerAppearanceOverrideComponent.KEY.get(player).tickServer()));
     }
     private static int setMode(ServerCommandSource source, boolean enabled) throws CommandSyntaxException {
         PlayerInstinctComponent c = PlayerInstinctComponent.KEY.get(source.getPlayerOrThrow()); c.setToggleModeEnabled(enabled);
