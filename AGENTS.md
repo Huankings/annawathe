@@ -44,7 +44,8 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - `src/main/java/dev/annawathe/api/collision/PlayerCollisionApi.java`：SOLID、VANILLA_PUSH、NO_COLLISION 碰撞规则。
 - `src/main/java/dev/annawathe/api/appearance/BodyAppearanceApi.java`：服务端尸体视觉外观解析。
 - `src/main/java/dev/annawathe/api/appearance/PlayerTransformApi.java`：持久化调试变形服务端门面。
-- `src/main/java/dev/annawathe/api/client/appearance/RoleNameApi.java`：客户端准心名称覆盖。
+- `src/client/java/dev/annawathe/api/client/gui/RoleNameHudApi.java`：完整准心名称、射线来源、目标过滤、同伙状态和额外 HUD。
+- `src/main/java/dev/annawathe/api/visibility/TargetVisibilityApi.java`：玩家/尸体渲染、选中、交互和攻击规则。
 - `src/client/java/dev/annawathe/api/client/appearance/PlayerAppearanceApi.java`：玩家/尸体皮肤解析。
 - `src/client/java/dev/annawathe/api/client/invisibility/HeldItemInvisibilityApi.java`：手持物隐藏。
 - `src/client/java/dev/annawathe/api/client/mood/PsychosisItemApi.java`：幻觉物品与手臂姿势 provider。
@@ -168,6 +169,8 @@ private void handler(
 - 尸体外观在 `GameFunctions.killPlayer` 的 `spawnEntity` 前解析，`PlayerBodyEntity` 的真实 owner UUID 不能改成 appearance UUID。
 - 玩家皮肤、尸体纹理、手持物和幻觉都是客户端显示层；服务端攻击、交互、购买和职业判断不能读取这些视觉结果。
 - `BodyRendererDispatchMixin` 自己维护尸体 slim/wide renderer map，不得 Shadow 原版 Wathe 私有 Mixin 字段，避免加载顺序导致启动崩溃。
+- `RoleNameRendererMixin` 完整接管原版准心名字 HUD；扩展不得再次 Mixin `RoleNameRenderer`，应使用 `RoleNameHudApi` 注册规则。
+- `TargetVisibilityApi` 的 `PASS/ALLOW/DENY` 是独立规则链；`TARGET` 过滤只影响客户端选中和准心，`INTERACT/ATTACK` 必须在服务端能力入口重新校验。
 
 ## 结算 renderer 规则
 
@@ -196,7 +199,7 @@ private void handler(
 ### 视觉 API 的客户端边界
 
 - `PlayerAppearanceApi` 返回的皮肤只影响客户端模型、披风和尸体 renderer。
-- `RoleNameApi` 只改变准心显示文本，不改变聊天、语音或服务端玩家名。
+- `RoleNameHudApi` 统一处理准心名字、非玩家实体名字、射线来源、玩家目标过滤、双向/单向同伙和额外 HUD；所有回调都只属于客户端显示层。
 - `HeldItemInvisibilityApi` 只隐藏其它局内存活玩家看到的模型；本人 F5、死亡/普通旁观视角和真实服务端物品不受影响。
 - `PsychosisItemApi` 的物品和 ArmPose 只存在观察者客户端缓存；死亡、停局、reset、断线必须清空。
 - `BodyAppearanceApi` 返回的是尸体视觉 UUID，真实 owner UUID 必须保留给验尸、尸袋、回放和死亡判定。

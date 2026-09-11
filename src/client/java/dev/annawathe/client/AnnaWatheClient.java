@@ -2,10 +2,11 @@ package dev.annawathe.client;
 
 import dev.annawathe.AnnaWathe;
 import dev.annawathe.api.instinct.InstinctApi;
-import dev.annawathe.api.client.appearance.RoleNameApi;
+import dev.annawathe.api.client.gui.RoleNameHudApi;
 import dev.annawathe.api.client.appearance.PlayerAppearanceApi;
 import dev.annawathe.client.gui.AnnaMoodRenderer;
 import dev.annawathe.client.gui.AnnaRoundTextRenderer;
+import dev.annawathe.client.compat.HarpyRoleHudCompat;
 import dev.annawathe.client.task.TaskPointClientState;
 import dev.annawathe.client.task.TaskPointOverlayRenderer;
 import dev.annawathe.client.tooltip.ItemTooltipApi;
@@ -45,6 +46,7 @@ public final class AnnaWatheClient implements ClientModInitializer {
     @Override public void onInitializeClient() {
         registerDefaultInstinctRules();
         registerTransformNameRule();
+        HarpyRoleHudCompat.register();
         ItemTooltipApi.initialize();
         ItemTooltipApi.registerItems(WatheItems.KNIFE, WatheItems.REVOLVER, WatheItems.DERRINGER, WatheItems.GRENADE,
                 WatheItems.PSYCHO_MODE, WatheItems.POISON_VIAL, WatheItems.SCORPION, WatheItems.FIRECRACKER,
@@ -76,7 +78,7 @@ public final class AnnaWatheClient implements ClientModInitializer {
     }
 
     private static void registerTransformNameRule() {
-        RoleNameApi.registerName(AnnaWathe.id("transform_name"), 50, (viewer, target, original) -> {
+        RoleNameHudApi.registerName(AnnaWathe.id("transform_name"), 50, (viewer, target, original) -> {
             var state = PlayerAppearanceOverrideComponent.KEY.get(target);
             if (!state.isActive() || state.getTargetUuid() == null || state.getTargetUuid().equals(target.getUuid())) return null;
             String name = PlayerAppearanceApi.resolveOriginalPlayerName(state.getTargetUuid());

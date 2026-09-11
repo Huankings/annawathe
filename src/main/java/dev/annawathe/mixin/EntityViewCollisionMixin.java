@@ -1,6 +1,7 @@
 package dev.annawathe.mixin;
 
 import dev.annawathe.api.collision.PlayerCollisionApi;
+import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -30,6 +31,8 @@ public interface EntityViewCollisionMixin {
         List<Entity> candidates = getOtherEntities(entity, box.expand(1.0E-7D), EntityPredicates.EXCEPT_SPECTATOR);
         List<VoxelShape> shapes = new ArrayList<>();
         for (Entity candidate : candidates) {
+            // 尸体是展示/交互实体，不是玩家移动碰撞体；必须允许玩家正常穿过尸体。
+            if (candidate instanceof PlayerBodyEntity) continue;
             if (candidate instanceof PlayerEntity other && PlayerCollisionApi.blocksMovement(self, other)) shapes.add(VoxelShapes.cuboid(other.getBoundingBox()));
             else if (!(candidate instanceof PlayerEntity)) shapes.add(VoxelShapes.cuboid(candidate.getBoundingBox()));
         }
