@@ -45,6 +45,10 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - `src/main/java/dev/annawathe/api/appearance/BodyAppearanceApi.java`：服务端尸体视觉外观解析。
 - `src/main/java/dev/annawathe/api/appearance/PlayerTransformApi.java`：持久化调试变形服务端门面。
 - `src/client/java/dev/annawathe/api/client/gui/RoleNameHudApi.java`：完整准心名称、射线来源、目标过滤、同伙状态和额外 HUD。
+- `src/client/java/dev/annawathe/api/client/hud/HudOverlayApi.java`：三阶段通用屏幕 HUD 注册与调度。
+- `src/client/java/dev/annawathe/api/client/hud/HudOverlayContext.java`：屏幕 HUD 的客户端只读上下文与热键栏复画入口。
+- `src/client/java/dev/annawathe/api/client/gui/CrosshairHudApi.java`：准心图标 provider、后置 overlay 和标准绘制工具。
+- `src/client/java/dev/annawathe/client/gui/AnnaCrosshairRenderer.java`：原版默认准心兼容与扩展规则调度。
 - `src/main/java/dev/annawathe/api/visibility/TargetVisibilityApi.java`：玩家/尸体渲染、选中、交互和攻击规则。
 - `src/client/java/dev/annawathe/api/client/appearance/PlayerAppearanceApi.java`：玩家/尸体皮肤解析。
 - `src/client/java/dev/annawathe/api/client/invisibility/HeldItemInvisibilityApi.java`：手持物隐藏。
@@ -131,6 +135,19 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - 动态控件使用独立 group ID，通过 `replaceGroup/clearGroup/setGroupVisible` 管理，关闭时必须解除焦点并清理。
 - `allowInventoryKeyClose` 只控制当前屏幕按键行为，不能替代服务端交互校验。
 
+### 通用屏幕 HUD 与准心图标
+
+- 自由位置的状态文字、全屏遮罩和狙击镜使用 `HudOverlayApi`；Mood、顶部时间、背包按钮、准心名字仍使用各自专用 API。
+- `BEFORE_HUD` 在主 HUD 前绘制，`MAIN_HUD` 在 Wathe 主 HUD 后绘制，`AFTER_HUD` 在整套 HUD 最后绘制。
+- HUD overlay 全部执行；priority 越大越晚绘制，同 priority 后注册者更晚绘制，因此更高 priority 位于更上层。
+- 普通职业 HUD 优先使用 `registerAliveRole`；非职业专属 HUD 使用 `register` 后自行检查 `context.aliveAndSurvival()`。
+- AFTER_HUD 遮罩需要保留热键栏时调用 `context.renderHotbar()`，不要再次 Mixin `InGameHud#renderHotbar`。
+- 替换 3x3 准心或准心下方 10x7 图标使用 `CrosshairHudApi.registerProvider`；只追加默认准心后的提示使用 `registerOverlay`。
+- 准心 provider 是短路链：大 priority 先执行，同 priority 后注册者先执行，`PASS` 继续，`HANDLED` 跳过默认准心。
+- 准心 overlay 不短路，并在 provider 或默认准心之后全部执行；大 priority 后绘制。
+- `HANDLED` 可以表示已绘制自定义准心，也可以表示本帧故意隐藏默认准心。
+- HudOverlay/CrosshairHud 都是客户端显示层，不能替代服务端职业、存活、距离、目标、冷却和技能合法性校验。
+
 ## CCA 规则
 
 当前组件：
@@ -189,6 +206,8 @@ private void handler(
 - 玩家皮肤、尸体纹理、手持物和幻觉都是客户端显示层；服务端攻击、交互、购买和职业判断不能读取这些视觉结果。
 - `BodyRendererDispatchMixin` 自己维护尸体 slim/wide renderer map，不得 Shadow 原版 Wathe 私有 Mixin 字段，避免加载顺序导致启动崩溃。
 - `RoleNameRendererMixin` 完整接管原版准心名字 HUD；扩展不得再次 Mixin `RoleNameRenderer`，应使用 `RoleNameHudApi` 注册规则。
+- `InGameHudOverlayMixin` 是通用屏幕 HUD 的唯一底层调度点；扩展不得为普通 HUD、黑屏或狙击镜继续 Mixin `InGameHud`。
+- `CrosshairRendererMixin` 完整接管原版准心图标；扩展不得再次 Mixin `CrosshairRenderer`，应使用 `CrosshairHudApi`。
 - `TargetVisibilityApi` 的 `PASS/ALLOW/DENY` 是独立规则链；`TARGET` 过滤只影响客户端选中和准心，`INTERACT/ATTACK` 必须在服务端能力入口重新校验。
 
 ## 结算 renderer 规则
@@ -218,6 +237,7 @@ private void handler(
 ### 视觉 API 的客户端边界
 
 - `PlayerAppearanceApi` 返回的皮肤只影响客户端模型、披风和尸体 renderer。
+- `CrosshairHudApi` 只影响第一人称准心图标和准心下方小提示；真实命中与技能使用必须由服务端重新校验。
 - `RoleNameHudApi` 统一处理准心名字、非玩家实体名字、射线来源、玩家目标过滤、双向/单向同伙和额外 HUD；所有回调都只属于客户端显示层。
 - `HeldItemInvisibilityApi` 只隐藏其它局内存活玩家看到的模型；本人 F5、死亡/普通旁观视角和真实服务端物品不受影响。
 - `PsychosisItemApi` 的物品和 ArmPose 只存在观察者客户端缓存；死亡、停局、reset、断线必须清空。

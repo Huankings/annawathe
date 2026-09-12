@@ -44,6 +44,8 @@ annawathe/
 - `PlayerCollisionApi`：SOLID、VANILLA_PUSH、NO_COLLISION 玩家碰撞规则；
 - `PlayerAppearanceApi` / `BodyAppearanceApi`：玩家与尸体皮肤覆盖；
 - `RoleNameHudApi`：完整准心名字、射线来源、目标过滤、杀手同伙和额外 HUD 扩展；
+- `HudOverlayApi`：三阶段通用屏幕 HUD、职业存活过滤、常用布局和热键栏复画；
+- `CrosshairHudApi`：可短路的准心 provider、后置 overlay 和标准/进度准心绘制工具；
 - `TargetVisibilityApi`：玩家/尸体渲染、准心选中、交互和攻击规则；
 - `HeldItemInvisibilityApi` / `PsychosisItemApi`：手持物隐藏与低心情幻觉物品/手臂姿势；
 - `PlayerTransformApi`：跨回合、重生和重启保存的调试外观变形；
@@ -68,10 +70,11 @@ annawathe/
 - `/annawathe:transform all <appearance> <seconds|permanent>`：让当前服务器所有其它在线玩家变成指定外观；
 - `/annawathe:transform clear <player>`、`/annawathe:transform clearAll`：清除变形。
 
-调试变形只覆盖普通外观和准心名称，不改变职业、阵营、声音、物品、碰撞或服务端身份，并且低于扩展职业和特殊视角外观规则。`PlayerMovementApi` 只迁移速度修正，不包含自改 Wathe 的完整体力系统。准心扩展统一使用 `RoleNameHudApi`，目标隐藏/不可选中/不可交互/不可攻击统一使用 `TargetVisibilityApi`。
+调试变形只覆盖普通外观和准心名称，不改变职业、阵营、声音、物品、碰撞或服务端身份，并且低于扩展职业和特殊视角外观规则。`PlayerMovementApi` 只迁移速度修正，不包含自改 Wathe 的完整体力系统。准心图标扩展统一使用 `CrosshairHudApi`，准心名字与目标文字使用 `RoleNameHudApi`，目标隐藏/不可选中/不可交互/不可攻击统一使用 `TargetVisibilityApi`。
 
 心情与任务接口详见 `README_MOOD_TASK_API.md`。
 商店和多货币接口详见 `README_SHOP_CURRENCY_API.md`；时间 HUD 与背包按钮详见 `README_TIME_INVENTORY_API.md`。
+通用屏幕 HUD 与准心图标接口详见 `README_HUD_CROSSHAIR_API.md`。
 
 ## 本能 API
 
