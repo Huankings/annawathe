@@ -112,6 +112,25 @@ AnnaWathe 是原版 Wathe 的扩展框架，不是自改 Wathe 的下一版本�
 - 颜色可能来自 `Color#getRGB()` 时必须用 `MoodHudColors.withAlpha` 重写 alpha，不能按位 OR。
 - 任务点扫描 handler 只判断当前格，不得自行全图扫描。
 
+### 商店与经济
+
+- 正式商品类型使用 `dev.annawathe.api.shop.ShopEntry`，不要让新扩展继续使用 Wathe 内部 `util.ShopEntry`。
+- 职业商店和修改器必须在 common 初始化注册，保证客户端显示与服务端重新解析得到相同列表。
+- 客户端购买只发送索引；服务端重新校验对局、玩法存活、动态列表、冷却、余额和支付方案。
+- `ShopPrice` 的 option 之间是 OR，同一 option 内是 AND；选择可支付总额最小的方案，同额按定义顺序。
+- 默认杀手商店价格由 `AnnaDefaultShop` 独立维护，不读取原版 `GameConstants.SHOP_ENTRIES` 的价格。
+- 自定义余额写入原版 `wathe:shop` CCA 的 Anna 扩展 NBT，并跟随原版 reset、同步和重生策略。
+- 任务币定义和收益路径保留，但默认 HUD、杀手任务收益和击杀收益保持关闭（数值为 0）。
+- 扩展购买回调只负责交付商品，禁止自行扣款或把客户端余额作为合法性判断。
+
+### Time HUD 与背包按钮
+
+- 顶部计时使用 `TimeHudApi` 注册 `PASS/HIDE/SHOW` provider，不再 Mixin 原版 `TimeRenderer`。
+- 时间 provider 只描述客户端显示；真实倒计时必须由服务端组件维护并同步。
+- 背包按钮使用 `InventoryButtonApi`，覆盖 LIMITED、VANILLA、CREATIVE 三类屏幕。
+- 动态控件使用独立 group ID，通过 `replaceGroup/clearGroup/setGroupVisible` 管理，关闭时必须解除焦点并清理。
+- `allowInventoryKeyClose` 只控制当前屏幕按键行为，不能替代服务端交互校验。
+
 ## CCA 规则
 
 当前组件：

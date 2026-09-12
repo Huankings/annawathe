@@ -33,8 +33,13 @@ public interface EntityViewCollisionMixin {
         for (Entity candidate : candidates) {
             // 尸体是展示/交互实体，不是玩家移动碰撞体；必须允许玩家正常穿过尸体。
             if (candidate instanceof PlayerBodyEntity) continue;
-            if (candidate instanceof PlayerEntity other && PlayerCollisionApi.blocksMovement(self, other)) shapes.add(VoxelShapes.cuboid(other.getBoundingBox()));
-            else if (!(candidate instanceof PlayerEntity)) shapes.add(VoxelShapes.cuboid(candidate.getBoundingBox()));
+            if (candidate instanceof PlayerEntity other && PlayerCollisionApi.blocksMovement(self, other)) {
+                shapes.add(VoxelShapes.cuboid(other.getBoundingBox()));
+            } else if (!(candidate instanceof PlayerEntity) && candidate.isCollidable()) {
+                // 恢复原版边界：只有实体自身声明为可碰撞时才加入移动碰撞体。
+                // Firecracker、Note 等 Wathe 展示/功能实体默认不可碰撞，不能因为这里重建列表而挡住玩家。
+                shapes.add(VoxelShapes.cuboid(candidate.getBoundingBox()));
+            }
         }
         cir.setReturnValue(List.copyOf(shapes));
     }

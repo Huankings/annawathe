@@ -42,6 +42,7 @@ import org.lwjgl.glfw.GLFW;
 public final class AnnaWatheClient implements ClientModInitializer {
     public static boolean instinctToggleActive;
     private static KeyBinding taskPointKey;
+    private static boolean previousGameRunning;
 
     @Override public void onInitializeClient() {
         registerDefaultInstinctRules();
@@ -60,10 +61,23 @@ public final class AnnaWatheClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             TaskPointClientState.clear(); AnnaMoodRenderer.reset(); instinctToggleActive = false;
             dev.annawathe.client.psychosis.AnnaPsychosisVisualState.clearAll();
+            // HUD 滚动状态和背包页码都只属于当前连接，不能带到下一局或下一台服务器。
+            dev.annawathe.client.gui.AnnaStoreRenderer.reset();
+            dev.annawathe.client.gui.AnnaTimeRenderer.reset();
+            dev.annawathe.api.client.inventory.InventoryPageState.reset();
+            dev.annawathe.api.client.inventory.InventoryButtonApi.reset();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             AnnaRoundTextRenderer.tick();
+            boolean gameRunning = client.world != null && GameWorldComponent.KEY.get(client.world).isRunning();
+            if (gameRunning != previousGameRunning) {
+                // 换局边界清掉纯客户端动画和分页，避免上一局的金额、时间来源或页码残留。
+                dev.annawathe.client.gui.AnnaStoreRenderer.reset();
+                dev.annawathe.client.gui.AnnaTimeRenderer.reset();
+                dev.annawathe.api.client.inventory.InventoryPageState.reset();
+                previousGameRunning = gameRunning;
+            }
             if (client.player != null && dev.doctor4t.wathe.client.WatheClient.instinctKeybind != null) {
                 while (dev.doctor4t.wathe.client.WatheClient.instinctKeybind.wasPressed()
                         && PlayerInstinctComponent.KEY.get(client.player).isToggleModeEnabled()) instinctToggleActive = !instinctToggleActive;

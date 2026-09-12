@@ -47,13 +47,17 @@ annawathe/
 - `TargetVisibilityApi`：玩家/尸体渲染、准心选中、交互和攻击规则；
 - `HeldItemInvisibilityApi` / `PsychosisItemApi`：手持物隐藏与低心情幻觉物品/手臂姿势；
 - `PlayerTransformApi`：跨回合、重生和重启保存的调试外观变形；
+- `ShopApi` / Anna `ShopEntry`：默认杀手商店重写、职业/动态商店与优先级修改器；
+- `EconomyApi` / `PlayerEconomyApi`：多货币余额、AND/OR 支付、被动收入和任务收入扩展；
+- `TimeHudApi`：可覆盖默认回合时间的优先级计时显示；
+- `InventoryButtonApi`：限制、普通和创造背包的按钮完整生命周期；
 - 精神崩溃死亡、调试指令，以及 shift/run/sit/stay/away 五个额外任务。
 
 心情数值采用自改 Wathe 的节奏，而不是原版 1.3.2 的数值：只要存在任意任务，每 tick
 下降 `1 / 4000`（约 3 分 20 秒从满值降到零），完成一个真实心情任务回复 `0.4`。
 同时存在多个任务时不会按任务数量倍增下降速度。
 
-具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。商店、体力、停电、雾效和服务端 Psycho profile 等其它自改 Wathe API 不属于当前范围。
+具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。体力、停电、雾效和服务端 Psycho profile 等其它自改 Wathe API 不属于当前范围。
 
 本轮新增的相关调试指令均要求权限等级 2：
 
@@ -67,6 +71,7 @@ annawathe/
 调试变形只覆盖普通外观和准心名称，不改变职业、阵营、声音、物品、碰撞或服务端身份，并且低于扩展职业和特殊视角外观规则。`PlayerMovementApi` 只迁移速度修正，不包含自改 Wathe 的完整体力系统。准心扩展统一使用 `RoleNameHudApi`，目标隐藏/不可选中/不可交互/不可攻击统一使用 `TargetVisibilityApi`。
 
 心情与任务接口详见 `README_MOOD_TASK_API.md`。
+商店和多货币接口详见 `README_SHOP_CURRENCY_API.md`；时间 HUD 与背包按钮详见 `README_TIME_INVENTORY_API.md`。
 
 ## 本能 API
 

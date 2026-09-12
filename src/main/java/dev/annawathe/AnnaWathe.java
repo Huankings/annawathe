@@ -11,6 +11,7 @@ import dev.annawathe.command.PlayerTransformCommand;
 import dev.annawathe.cca.PlayerAppearanceOverrideComponent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import dev.annawathe.network.TaskPointSyncPayload;
+import dev.annawathe.network.AnnaStoreBuyPayload;
 import dev.annawathe.task.TaskPointSyncManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -28,6 +29,8 @@ public final class AnnaWathe implements ModInitializer {
     @Override public void onInitialize() {
         // 任务点整表使用专用 S2C payload；注册必须在任何玩家连接之前完成。
         PayloadTypeRegistry.playS2C().register(TaskPointSyncPayload.ID, TaskPointSyncPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(AnnaStoreBuyPayload.ID, AnnaStoreBuyPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(AnnaStoreBuyPayload.ID, new AnnaStoreBuyPayload.Receiver());
         TaskPointSyncManager.initialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MoodCommands.register(dispatcher);

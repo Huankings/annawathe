@@ -1,0 +1,3 @@
+package dev.annawathe.api.client.inventory;
+import net.fabricmc.api.EnvType; import net.fabricmc.api.Environment;
+@Environment(EnvType.CLIENT) public final class InventoryButtonLayout { public static final int PLAYERS_PER_PAGE=10,SLOT_APART=36,SLOT_X_OFFSET=9; private InventoryButtonLayout(){} public static int getTotalPageCount(int players){return Math.max(1,(players+PLAYERS_PER_PAGE-1)/PLAYERS_PER_PAGE);} public static int getCenteredPlayerStartX(int width,int count){return width/2-count*SLOT_APART/2+SLOT_X_OFFSET;} public static int getCenteredGroupStartX(int width,int count,boolean prev,boolean next){return width/2-(count+(prev?1:0)+(next?1:0))*SLOT_APART/2+SLOT_X_OFFSET;} public static int getPlayerRowY(int height){return (height-32)/2+80;} }

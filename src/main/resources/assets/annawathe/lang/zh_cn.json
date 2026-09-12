@@ -21,5 +21,10 @@
   "annawathe.hud.task_point.unknown": "未知任务点",
   "key.annawathe.task_points": "任务点透视",
   "replay.death.wathe.mental_breakdown.died": "%s 死于精神崩溃",
-  "death_reason.wathe.mental_breakdown": "精神崩溃"
+  "death_reason.wathe.mental_breakdown": "精神崩溃",
+  "shop.purchase_failed": "购买失败",
+  "shop.price.or": "或",
+  "shop.price.free": "免费",
+  "currency.wathe.money": "金币",
+  "currency.wathe.task_money": "任务币"
 }

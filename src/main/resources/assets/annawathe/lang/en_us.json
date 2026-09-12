@@ -21,5 +21,10 @@
   "annawathe.hud.task_point.unknown": "Unknown task point",
   "key.annawathe.task_points": "Task point overlay",
   "replay.death.wathe.mental_breakdown.died": "%s died of mental breakdown",
-  "death_reason.wathe.mental_breakdown": "mental breakdown"
+  "death_reason.wathe.mental_breakdown": "mental breakdown",
+  "shop.purchase_failed": "Purchase failed",
+  "shop.price.or": "or",
+  "shop.price.free": "Free",
+  "currency.wathe.money": "Money",
+  "currency.wathe.task_money": "Task money"
 }

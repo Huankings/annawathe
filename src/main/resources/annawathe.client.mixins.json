@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.annawathe.client.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["WatheClientMixin", "RoundTextRendererMixin", "WatheItemTooltipsMixin", "ItemCooldownAccessor", "ItemCooldownEntryAccessor", "MoodRendererMixin", "DrawContextAccessor", "AbstractClientPlayerAppearanceMixin", "PlayerAppearanceRendererMixin", "PlayerBodyTextureMixin", "PlayerBodyVisibilityRendererMixin", "BodyRendererDispatchMixin", "HeldItemFeatureRendererMixin", "BipedEntityModelMixin", "RoleNameRendererMixin", "PlayerMoodPsychosisMixin", "LivingEntityTargetVisibilityMixin"],
+  "mixins": ["WatheClientMixin", "RoundTextRendererMixin", "WatheItemTooltipsMixin", "ItemCooldownAccessor", "ItemCooldownEntryAccessor", "MoodRendererMixin", "DrawContextAccessor", "AbstractClientPlayerAppearanceMixin", "PlayerAppearanceRendererMixin", "PlayerBodyTextureMixin", "PlayerBodyVisibilityRendererMixin", "BodyRendererDispatchMixin", "HeldItemFeatureRendererMixin", "BipedEntityModelMixin", "RoleNameRendererMixin", "PlayerMoodPsychosisMixin", "LivingEntityTargetVisibilityMixin", "TimeRendererMixin", "StoreRendererMixin", "InventoryScreenButtonsMixin", "CreativeInventoryButtonsMixin", "HandledScreenButtonsMixin", "LimitedInventoryButtonsMixin", "LimitedHandledScreenButtonsMixin"],
   "injectors": {"defaultRequire": 1}
 }
