@@ -1,8 +1,14 @@
 package dev.annawathe.api.win;
-import dev.annawathe.cca.*; import dev.annawathe.mixin.VictoryBridge; import dev.annawathe.api.win.VictoryApi.*; import dev.annawathe.cca.AnnaRoundEndState; import dev.annawathe.AnnaWathe; import dev.doctor4t.wathe.cca.GameWorldComponent; import dev.doctor4t.wathe.game.GameFunctions; import net.minecraft.entity.player.PlayerEntity; import net.minecraft.server.network.ServerPlayerEntity; import net.minecraft.server.world.ServerWorld; import net.minecraft.util.Identifier; import java.util.*;
+import dev.annawathe.cca.*; import dev.annawathe.bridge.VictoryBridge; import dev.annawathe.api.win.VictoryApi.*; import dev.annawathe.cca.AnnaRoundEndState; import dev.annawathe.AnnaWathe; import dev.doctor4t.wathe.cca.GameWorldComponent; import dev.doctor4t.wathe.game.GameFunctions; import net.minecraft.entity.player.PlayerEntity; import net.minecraft.server.network.ServerPlayerEntity; import net.minecraft.server.world.ServerWorld; import net.minecraft.util.Identifier; import java.util.*;
 /** 通用胜利仲裁 API；具体职业只需注册规则。 */
 public final class VictoryApi { private static final List<Entry> RULES=new ArrayList<>();private static long order;private VictoryApi(){}
- public static synchronized void registerRule(Identifier id,int p,VictoryRule r){RULES.removeIf(e->e.id.equals(id));RULES.add(new Entry(id,p,order++,r));RULES.sort(Comparator.<Entry>comparingInt(e->e.priority).reversed().thenComparingLong(e->e.order).reversed());}
+ public static synchronized void registerRule(Identifier id,int p,VictoryRule r){
+  RULES.removeIf(e->e.id.equals(id));
+  RULES.add(new Entry(id,p,order++,r));
+  // 与 InstinctApi 一致：高 priority 先仲裁，同 priority 后注册者先仲裁。
+  RULES.sort(Comparator.<Entry>comparingInt(e->e.priority).reversed()
+          .thenComparing(Comparator.comparingLong((Entry e)->e.order).reversed()));
+ }
  public static VictoryResult evaluate(ServerWorld w,GameWorldComponent g,GameFunctions.WinStatus s){List<ServerPlayerEntity>a=w.getPlayers(GameFunctions::isPlayerAliveAndSurvival);Context c=new Context(w,g,List.copyOf(a),s);for(Entry e:List.copyOf(RULES)){VictoryResult r=e.rule.evaluate(c);if(r!=null&&r.action!=Action.PASS)return r;}return VictoryResult.pass();}
  public static void endGameWithCustomVictory(ServerWorld w,CustomVictory v){AnnaRoundEndState st=AnnaRoundEndState.KEY.get(w);st.setCustomVictory(v);VictoryBridge.capture(w);dev.doctor4t.wathe.cca.GameRoundEndComponent.KEY.get(w).setRoundEndData(w.getPlayers(),GameFunctions.WinStatus.KILLERS);GameFunctions.stopGame(w);}
  public static void endGameWithVanillaWin(ServerWorld w,GameFunctions.WinStatus s,Collection<UUID> extra){AnnaRoundEndState.KEY.get(w).setExtraWinners(extra);dev.doctor4t.wathe.cca.GameRoundEndComponent.KEY.get(w).setRoundEndData(w.getPlayers(),s);GameFunctions.stopGame(w);}
