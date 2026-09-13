@@ -1,7 +1,7 @@
 # AnnaWathe 文档索引 / Documentation Index
 
-AnnaWathe 是面向原版 **Wathe: Murder Mystery 1.3.2-1.21.1** 的**扩展框架 Mod**，同时自带一整套原版加强玩法。
-AnnaWathe is an **extension framework mod** for vanilla **Wathe: Murder Mystery 1.3.2-1.21.1**, bundled with a full set of vanilla-enhancing gameplay rules.
+AnnaWathe 是面向原版 **Wathe: Murder Mystery（1.3.2 ~ 1.4.1）** 的**扩展框架 Mod**，同时自带一整套原版加强玩法。
+AnnaWathe is an **extension framework mod** for vanilla **Wathe: Murder Mystery (1.3.2 – 1.4.1)**, bundled with a full set of vanilla-enhancing gameplay rules.
 
 ---
 
@@ -56,7 +56,7 @@ It occupies a different niche from other add-ons: Kin's Wathe and Wathe: Extende
 | Minecraft | 1.21.1 |
 | Java | 21 |
 | 加载器 / Loader | Fabric Loader 0.17.2+ |
-| 基础 Mod / Base mod | Wathe `1.3.2-1.21.1`（`>=1.3.2-1.21.1`） |
+| 基础 Mod / Base mod | Wathe `1.3.2-1.21.1` ~ `1.4.1-1.21.1`（支持范围，推荐写法 `>=1.3.2-1.21.1 <=1.4.1-1.21.1`） |
 | 必需依赖 / Required deps | Fabric API、Cardinal Components API 6.1.1 |
 | 环境 / Environment | 双端（客户端 + 服务端都要装）/ Both sides required |
 | 软兼容 / Soft compat | HarpyModLoader（可选）/ optional |

@@ -1,7 +1,7 @@
 # AnnaWathe API Reference (English)
 
 > Public interface manual for add-on developers
-> For AnnaWathe `1.0.0-1.21.1` + vanilla Wathe `1.3.2-1.21.1`
+> For AnnaWathe `1.0.0-1.21.1` + vanilla Wathe `1.3.2-1.21.1` – `1.4.1-1.21.1`
 
 **This document covers all 24 public API groups under the `dev.annawathe.api` package** — 70 files in total (45 common / 25 client). Every signature is taken verbatim from the source; nothing is simplified or inferred.
 
@@ -56,7 +56,10 @@ repositories {
 
 dependencies {
     modApi files("libs/annawathe-1.0.0-1.21.1.jar")
-    modApi files("libs/wathe-1.3.2-1.21.1.jar")            // AnnaWathe API signatures reference Wathe types
+    // AnnaWathe API signatures reference Wathe types. Any version works at compile time
+    // (1.3.2 or 1.4.1) as long as it matches the Wathe version you target; AnnaWathe itself
+    // is compatible with both 1.3.2 and 1.4.1.
+    modApi files("libs/wathe-1.3.2-1.21.1.jar")
 }
 ```
 
@@ -66,10 +69,12 @@ Declare the dependency in `fabric.mod.json`:
 {
   "depends": {
     "annawathe": ">=1.0.0-1.21.1",
-    "wathe": ">=1.3.2-1.21.1"
+    "wathe": ">=1.3.2-1.21.1 <=1.4.1-1.21.1"
   }
 }
 ```
+
+> **Writing `wathe` as a range** — `>=1.3.2-1.21.1 <=1.4.1-1.21.1` — is recommended: it gives both a lower and an upper bound, so the mod runs on either 1.3.2 or 1.4.1 while a future Wathe release is not silently accepted. Writing only `>=1.3.2-1.21.1` is semantically equivalent to allowing 1.4.1 and anything newer.
 
 ### 0.2 Registration Timing (Important)
 

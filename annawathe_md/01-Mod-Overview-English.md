@@ -1,6 +1,6 @@
 # AnnaWathe — Mod Overview (English)
 
-> An extension framework mod for vanilla **Wathe: Murder Mystery 1.3.2-1.21.1**, bundled with a full set of vanilla-enhancing gameplay rules
+> An extension framework mod for vanilla **Wathe: Murder Mystery (1.3.2 – 1.4.1)**, bundled with a full set of vanilla-enhancing gameplay rules
 > Version `1.0.0-1.21.1` · Minecraft 1.21.1 · Fabric · Java 21
 
 ---
@@ -46,7 +46,7 @@ It adds **no** new roles, items or blocks. Vanilla Wathe's four factions (Civili
 | Minecraft | 1.21.1 (locked for both build and runtime) |
 | Java | 21 |
 | Loader | Fabric Loader 0.17.2 or compatible |
-| Base mod | **Vanilla Wathe `1.3.2-1.21.1`** (`fabric.mod.json` declares `wathe >= 1.3.2-1.21.1`) |
+| Base mod | **Vanilla Wathe `1.3.2-1.21.1` – `1.4.1-1.21.1`** (both the older 1.3.2 and the latest 1.4.1 are supported) |
 | Required deps | Fabric API, Cardinal Components API 6.1.1 |
 | Environment | Both sides — client and server must both install it |
 | Soft compat (optional) | HarpyModLoader (two compat Mixins activate automatically when present) |
@@ -54,9 +54,18 @@ It adds **no** new roles, items or blocks. Vanilla Wathe's four factions (Civili
 ### Installation
 
 1. Install Fabric Loader 0.17.2+ and Fabric API.
-2. Put **vanilla Wathe 1.3.2-1.21.1** into `mods/`.
+2. Put **vanilla Wathe** into `mods/` — either 1.3.2 or 1.4.1 works; AnnaWathe is compatible with both.
 3. Put `annawathe-1.0.0-1.21.1.jar` into `mods/` (on both client and server).
 4. On startup, make sure the log does not contain `was not registered through mod metadata or plugin` — that is the classic symptom of missing CCA metadata.
+
+### Supported Wathe Versions
+
+AnnaWathe supports **both Wathe 1.3.2 and 1.4.1** — that is, the whole `1.3.2 – 1.4.1` range.
+
+- **At runtime**: installing either 1.3.2 or 1.4.1 plays correctly; both versions' mechanics have been adapted.
+- **Dependency declaration**: the recommended form is `"wathe": ">=1.3.2-1.21.1 <=1.4.1-1.21.1"`, pinning the upper bound to the verified 1.4.1 so a future Wathe release is not silently accepted.
+
+> **Note (project state at the time of writing):** this project's `gradle.properties` and `libs/` still use `wathe-1.3.2-1.21.1.jar` as the **compile** dependency, so the `fabric.mod.json` visible in the SDK declares `"wathe": ">=1.3.2-1.21.1"` — that constrains only the **lower** bound and already permits 1.4.1 and newer at runtime. Making the upper bound effective requires changing that declaration to the recommended form above. Other than that, 1.3.2 is merely the compile baseline and **does not mean AnnaWathe can only run on 1.3.2**.
 
 ### Important Warning
 
@@ -138,7 +147,7 @@ AnnaWathe does **not** bundle the concrete role rules of NoellesRoles or StupidE
 | First task delay | 600 ticks (30 s) | `TIME_TO_FIRST_TASK` |
 | Refill cooldown | Random 600–1200 ticks (30–60 s) | Draws the next task when you hold none |
 
-> **Why not vanilla values:** vanilla Wathe 1.3.2 drains slower and rewards `0.5` per task. AnnaWathe pins the modified-Wathe pacing; a source comment states this explicitly so the game does not silently fall back to the vanilla feel at runtime.
+> **Why not vanilla values:** vanilla Wathe (both 1.3.2 and 1.4.1) drains slower and rewards `0.5` per task. AnnaWathe pins the modified-Wathe pacing; a source comment states this explicitly so the game does not silently fall back to the vanilla feel at runtime.
 
 **Tuning interfaces:** `MoodApi.setDrainMultiplier(float)` multiplies the base drain; `MoodApi.protectFromDrain(ticks)` pauses it temporarily; `MoodApi.setMoodDeathEnabled(bool)` is the world-level toggle.
 
@@ -459,7 +468,7 @@ Nearly every API uses the same priority semantics, so add-ons can combine freely
 
 | Target | Status |
 | --- | --- |
-| Vanilla Wathe 1.3.2-1.21.1 | The only supported base version |
+| Vanilla Wathe 1.3.2 – 1.4.1 | **Supported range**; 1.4.1 is also adapted |
 | HarpyModLoader | **Soft compatible**: two compat Mixins load only when it is detected, handling forced-role bookkeeping and neutral-role priority assignment. Not a dependency; inert without it |
 | NoellesRoles / StupidExpress / StarryExpress | Their role rules are not bundled; those add-ons must register victories and tasks through the API |
 | Modified Wathe | **Incompatible** — never load both |
@@ -577,14 +586,15 @@ Artifacts: `build/libs/annawathe-1.0.0-1.21.1.jar` (~530 KB) and `annawathe-1.0.
 | Cardinal Components API | 6.1.1 |
 | Ratatouille | 1.4.3-1.21.1 |
 | MidnightLib | 1.5.7-fabric (dev runtime only) |
-| Wathe | 1.3.2-1.21.1 (`libs/wathe-1.3.2-1.21.1.jar`) |
+| Wathe | **1.3.2-1.21.1 – 1.4.1-1.21.1 (supported runtime range)** |
+| Wathe (compile dep) | `libs/wathe-1.3.2-1.21.1.jar` — the current compile baseline is 1.3.2; that is a build choice, and 1.4.1 is supported at runtime |
 | Java | 21 |
 
 ### 15.3 Source Layout
 
 ```text
 annawathe/
-├─ libs/wathe-1.3.2-1.21.1.jar          Base mod compile dependency
+├─ libs/wathe-1.3.2-1.21.1.jar          Base mod compile dependency (compile baseline 1.3.2; runtime compatible with 1.3.2–1.4.1)
 ├─ src/main/java/dev/annawathe/         Server / common: API, CCA, Mixins, commands, network, tasks
 │  ├─ api/                              Public API (45 files)
 │  ├─ bridge/                           Internal bridges (add-ons must not use these)

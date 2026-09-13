@@ -1,7 +1,7 @@
 # AnnaWathe API 参考（中文）
 
 > 面向扩展开发者的公开接口手册
-> 适用于 AnnaWathe `1.0.0-1.21.1` + 原版 Wathe `1.3.2-1.21.1`
+> 适用于 AnnaWathe `1.0.0-1.21.1` + 原版 Wathe `1.3.2-1.21.1` ~ `1.4.1-1.21.1`
 
 **本文档覆盖 `dev.annawathe.api` 包下全部 24 组公开 API**，共 70 个文件（common 45 / client 25）。所有签名均取自源码，未做简化或推测。
 
@@ -56,7 +56,9 @@ repositories {
 
 dependencies {
     modApi files("libs/annawathe-1.0.0-1.21.1.jar")
-    modApi files("libs/wathe-1.3.2-1.21.1.jar")            // AnnaWathe 的 API 签名引用 Wathe 类型
+    // AnnaWathe 的 API 签名引用 Wathe 类型。编译时用哪个版本都可以（1.3.2 或 1.4.1），
+    // 只要与你要适配的 Wathe 版本一致即可；AnnaWathe 本身同时兼容 1.3.2 与 1.4.1。
+    modApi files("libs/wathe-1.3.2-1.21.1.jar")
 }
 ```
 
@@ -66,10 +68,12 @@ dependencies {
 {
   "depends": {
     "annawathe": ">=1.0.0-1.21.1",
-    "wathe": ">=1.3.2-1.21.1"
+    "wathe": ">=1.3.2-1.21.1 <=1.4.1-1.21.1"
   }
 }
 ```
+
+> **推荐把 `wathe` 写成区间** `>=1.3.2-1.21.1 <=1.4.1-1.21.1`：它同时给出下界与上界，既允许在 1.3.2 或 1.4.1 上运行，又不会被将来更新的 Wathe 版本静默接受。若只写 `>=1.3.2-1.21.1`，语义上等于允许 1.4.1 及更高版本。
 
 ### 0.2 注册时机（非常重要）
 
