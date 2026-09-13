@@ -2,6 +2,7 @@ package dev.annawathe.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.annawathe.api.appearance.BodyAppearanceApi;
+import dev.annawathe.api.body.BodyInfoApi;
 import dev.annawathe.bridge.PlayerBodyAppearanceBridge;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,5 +22,7 @@ public abstract class GameFunctionsBodyAppearanceMixin {
         if (body instanceof PlayerBodyAppearanceBridge bridge) {
             bridge.annawathe$setAppearanceUuid(BodyAppearanceApi.resolveAppearanceUuid(victim, killer, deathReason));
         }
+        // 尸体生成瞬间保存死因、死亡时间和死亡时身份，避免客户端查看时被后续转职污染。
+        BodyInfoApi.initializeBody(body, victim, deathReason);
     }
 }

@@ -7,13 +7,12 @@ import dev.annawathe.api.task.MoodTaskInstance;
 import dev.annawathe.api.task.TaskCompletionApi;
 import dev.annawathe.cca.AnnaMoodSettings;
 import dev.annawathe.bridge.MoodTaskBridge;
+import dev.annawathe.compat.wathe.WatheTaskCompleteNotifier;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
-import dev.doctor4t.wathe.util.TaskCompletePayload;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -265,7 +264,8 @@ public final class MoodTaskState {
         // 必须经过原版公共 setMood，让旧扩展对该方法的合法监听仍然生效。
         if (rewardMood) component.setMood(bridge.annawathe$rawMood() + MOOD_GAIN);
         if (bridge.annawathe$player() instanceof ServerPlayerEntity serverPlayer) {
-            ServerPlayNetworking.send(serverPlayer, new TaskCompletePayload());
+            // Wathe 1.3.2/1.4.1 的原版完成提示 payload 包路径不同，由兼容层运行时选择。
+            WatheTaskCompleteNotifier.send(serverPlayer);
             GameWorldComponent game = GameWorldComponent.KEY.get(serverPlayer.getWorld());
             TaskCompletionApi.dispatch(new TaskCompletionApi.TaskCompletionContext(serverPlayer, game, game.getRole(serverPlayer), id, definition, rewardMood));
         }

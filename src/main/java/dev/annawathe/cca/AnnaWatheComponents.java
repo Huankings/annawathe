@@ -1,5 +1,6 @@
 package dev.annawathe.cca;
 import net.minecraft.entity.player.PlayerEntity;
+import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
@@ -19,6 +20,7 @@ public final class AnnaWatheComponents implements EntityComponentInitializer, Wo
         r.beginRegistration(PlayerEntity.class, PlayerInstinctComponent.KEY).respawnStrategy(RespawnCopyStrategy.CHARACTER).end(PlayerInstinctComponent::new);
         r.beginRegistration(PlayerEntity.class, PlayerLifeStateComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(PlayerLifeStateComponent::new);
         r.beginRegistration(PlayerEntity.class, PlayerAppearanceOverrideComponent.KEY).respawnStrategy(RespawnCopyStrategy.CHARACTER).end(PlayerAppearanceOverrideComponent::new);
+        r.beginRegistration(PlayerBodyEntity.class, AnnaBodyInfoComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AnnaBodyInfoComponent::new);
     }
     @Override public void registerWorldComponentFactories(WorldComponentFactoryRegistry r) {
         r.register(AnnaRoundEndState.KEY, AnnaRoundEndState::new);

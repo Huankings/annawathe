@@ -2,7 +2,7 @@
 
 AnnaWathe 是面向原版 Wathe 的扩展框架 Mod，运行于 Minecraft 1.21.1、Fabric、Java 21。它提供本能透视、独立胜利、物品 Tooltip/准确冷却读秒和结算界面重写的统一接入点。
 
-本工程与 `D:\哈比快车最新源码\wathe\Wathe - 副本1` 的自改 Wathe 完全独立。AnnaWathe 只搭配原版 Wathe `1.3.2-1.21.1`，不可与自改 Wathe jar 同时加载。
+本工程与 `D:\哈比快车最新源码\wathe\Wathe - 副本1` 的自改 Wathe 完全独立。AnnaWathe 只搭配原版 Wathe `1.3.2-1.21.1`，不可与自改 Wathe jar 同时加载。Psycho profile、护盾、临时物品和视觉能力由 AnnaWathe 自己提供，不依赖自改 Wathe。
 
 ## 运行环境
 
@@ -48,6 +48,9 @@ annawathe/
 - `CrosshairHudApi`：可短路的准心 provider、后置 overlay 和标准/进度准心绘制工具；
 - `TargetVisibilityApi`：玩家/尸体渲染、准心选中、交互和攻击规则；
 - `HeldItemInvisibilityApi` / `PsychosisItemApi`：手持物隐藏与低心情幻觉物品/手臂姿势；
+- `PsychoModeApi` / `PsychoModeProfile`：可注册的疯魔持续时间、护盾、武器、临时物品、锁栏和服务端护盾规则；
+- `PsychoModeClientApi`：疯魔皮肤、模型特征隐藏、背景音乐和视觉 provider；
+- `BodyInfoApi` / `BodyInfoHudApi`：尸体死亡时间+死因摘要、死亡时身份快照及客户端字段可见性规则；
 - `PlayerTransformApi`：跨回合、重生和重启保存的调试外观变形；
 - `ShopApi` / Anna `ShopEntry`：默认杀手商店重写、职业/动态商店与优先级修改器；
 - `EconomyApi` / `PlayerEconomyApi`：多货币余额、AND/OR 支付、被动收入和任务收入扩展；
@@ -59,7 +62,7 @@ annawathe/
 下降 `1 / 4000`（约 3 分 20 秒从满值降到零），完成一个真实心情任务回复 `0.4`。
 同时存在多个任务时不会按任务数量倍增下降速度。
 
-具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。体力、停电、雾效和服务端 Psycho profile 等其它自改 Wathe API 不属于当前范围。
+具体职业胜利和任务规则不放在 AnnaWathe 内，而由扩展 Mod 自己注册。体力、停电、雾效和回放事件兼容仍不属于当前范围。
 
 本轮新增的相关调试指令均要求权限等级 2：
 
@@ -151,8 +154,17 @@ AnnaWathe 已禁用原版 Wathe Tooltip callback，其他扩展不要为同类�
 | `PlayerLifeStateComponent` | `annawathe:life_state` | creative/spectator 特殊玩法存活授权。 |
 | `PlayerAppearanceOverrideComponent` | `annawathe:appearance_override` | 持久化调试外观变形目标与到期时间。 |
 | `AnnaCollisionSettings` | `annawathe:collision_settings` | 玩家碰撞总开关、开局免碰撞时间和本局起点。 |
+| `AnnaBodyInfoComponent` | `annawathe:body_info` | 尸体死亡原因、死亡时身份和死亡世界时间。 |
 
 新组件必须同时完成 factory、NBT、同步/清理，并在 `fabric.mod.json` 的 `custom.cardinal-components` 声明 ID。否则会出现 `was not registered through mod metadata or plugin`。
+
+## Psycho 与尸体信息 API
+
+`PsychoModeApi.registerProfile` 注册扩展 profile；`start(player, profileId)`、`stop(player)`、`isActive(player)`、`getActiveProfile(player)`、`getArmour(player)` 和 `getRemainingTicks(player)` 用于服务端状态控制。`registerShieldRule` 用于穿盾/特殊护盾规则，规则优先级与其它 Anna API 一致。临时授予物品必须由 profile 的 `grantedItems` 提供，Anna 会自动写入并在结束时精确回收标记物品。
+
+`PsychoModeClientApi.registerVisualProvider` 和 `registerBackgroundAmbience` 只影响客户端皮肤、模型特征和背景音；不能替代服务端合法性判断。
+
+尸体生成时 Anna 会通过 `BodyInfoApi` 保存死亡时间、死因和死亡瞬间职业。`BodyInfoHudApi.registerRule` 的 `deathSummary` 表示“死亡时间+死因”整行，`roleIdentity` 表示死者身份；扩展可以只显示其中一项。默认只有非存活观察者显示两项，具体职业/词条可以注册更高优先级规则。
 
 ## 构建
 

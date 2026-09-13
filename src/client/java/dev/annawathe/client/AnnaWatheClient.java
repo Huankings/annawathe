@@ -7,6 +7,7 @@ import dev.annawathe.api.client.appearance.PlayerAppearanceApi;
 import dev.annawathe.client.gui.AnnaMoodRenderer;
 import dev.annawathe.client.gui.AnnaRoundTextRenderer;
 import dev.annawathe.client.compat.HarpyRoleHudCompat;
+import dev.annawathe.api.client.psycho.PsychoModeClientApi;
 import dev.annawathe.client.task.TaskPointClientState;
 import dev.annawathe.client.task.TaskPointOverlayRenderer;
 import dev.annawathe.client.tooltip.ItemTooltipApi;
@@ -45,6 +46,7 @@ public final class AnnaWatheClient implements ClientModInitializer {
     private static boolean previousGameRunning;
 
     @Override public void onInitializeClient() {
+        PsychoModeClientApi.registerDefaultClientHandlers();
         registerDefaultInstinctRules();
         registerTransformNameRule();
         HarpyRoleHudCompat.register();

@@ -27,4 +27,6 @@
   "shop.price.free": "Free",
   "currency.wathe.money": "Money",
   "currency.wathe.task_money": "Task money"
+  ,"hud.annawathe.body.death_info": "Died %s seconds ago | Cause: "
+  ,"hud.annawathe.body.role_info": "Role: "
 }

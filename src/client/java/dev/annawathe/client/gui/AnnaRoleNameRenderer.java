@@ -1,6 +1,7 @@
 package dev.annawathe.client.gui;
 
 import dev.annawathe.api.client.gui.RoleNameHudApi;
+import dev.annawathe.api.client.gui.BodyInfoHudApi;
 import dev.annawathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
@@ -53,6 +54,7 @@ public final class AnnaRoleNameRenderer {
         EntityHitResult noteHit=ProjectileUtil.getCollision(source,e->e instanceof NoteEntity,range) instanceof EntityHitResult result?result:null;
         if(noteHit!=null&&noteHit.getEntity() instanceof NoteEntity note){noteAlpha=MathHelper.lerp(delta/4F,noteAlpha,1F);nameAlpha=0F;for(int i=0;i<4;i++)notes[i]=Text.literal(note.getLines()[i]);}else noteAlpha=MathHelper.lerp(delta/4F,noteAlpha,0F);
         if(noteAlpha>.05F){context.getMatrices().push();context.getMatrices().translate(context.getScaledWindowWidth()/2F,context.getScaledWindowHeight()/2F+6,0);context.getMatrices().scale(.6F,.6F,1F);for(int i=0;i<4;i++){int w=renderer.getWidth(notes[i]);context.drawTextWithShadow(renderer,notes[i],-w/2,16+i*(renderer.fontHeight+2),MathHelper.packRgb(1F,1F,1F)|((int)(noteAlpha*255)<<24));}context.getMatrices().pop();}
+        BodyInfoHudApi.render(player, renderer, context, range);
         RoleNameHudApi.renderExtraHud(new RoleNameHudApi.Context(renderer,player,context,counter,range,targetPlayer,targetEntity,name,nameAlpha,noteAlpha));
     }
     private static void renderName(TextRenderer renderer,DrawContext context,Text text,float alpha,boolean cohort){if(alpha<=.05F)return;context.getMatrices().push();context.getMatrices().translate(context.getScaledWindowWidth()/2F,context.getScaledWindowHeight()/2F+6,0);context.getMatrices().scale(.6F,.6F,1F);int w=renderer.getWidth(text);context.drawTextWithShadow(renderer,text,-w/2,16,MathHelper.packRgb(1F,1F,1F)|((int)(alpha*255)<<24));if(cohort){context.getMatrices().translate(0,20+renderer.fontHeight,0);MutableText t=Text.translatable("game.tip.cohort");int tw=renderer.getWidth(t);context.drawTextWithShadow(renderer,t,-tw/2,0,MathHelper.packRgb(1F,0F,0F)|((int)(alpha*255)<<24));}context.getMatrices().pop();}

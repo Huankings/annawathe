@@ -27,4 +27,6 @@
   "shop.price.free": "免费",
   "currency.wathe.money": "金币",
   "currency.wathe.task_money": "任务币"
+  ,"hud.annawathe.body.death_info": "死亡时间：%s秒前 | 死因："
+  ,"hud.annawathe.body.role_info": "身份："
 }

@@ -2,6 +2,8 @@ package dev.annawathe.client.compat;
 
 import dev.annawathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.api.WatheRoles;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -97,6 +99,32 @@ public final class HarpyRoleHudCompat {
         }
     }
 
+    /**
+     * 尸体身份 HUD 使用的 Harpy 职业名称/颜色解析。
+     * 这里按死亡快照中的 Role Identifier 查找 Wathe Role，再通过 Harpy 的公开静态方法取本地化名称；
+     * Harpy 未安装或版本不兼容时返回 null，由 BodyInfoHudApi 回退到原版翻译键。
+     */
+    public static @Nullable RoleDisplay resolveRoleDisplay(@Nullable net.minecraft.util.Identifier roleId) {
+        if (roleId == null || !FabricLoader.getInstance().isModLoaded(MOD_ID)) return null;
+        try {
+            Role role = null;
+            for (Role candidate : WatheRoles.ROLES) {
+                if (roleId.equals(candidate.identifier())) {
+                    role = candidate;
+                    break;
+                }
+            }
+            if (role == null) return null;
+            Class<?> harpyClass = Class.forName("org.agmas.harpymodloader.Harpymodloader");
+            Method getRoleName = findSingleArgumentMethod(harpyClass, "getRoleName", role.getClass());
+            Object value = getRoleName.invoke(null, role);
+            if (!(value instanceof MutableText name)) return null;
+            return new RoleDisplay(name.copy(), invokeInt(role, "color", 0xFFFFFF));
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
     private static List<ModifierInfo> resolveModifiers(PlayerEntity target) {
         try {
             Class<?> componentClass = Class.forName("org.agmas.harpymodloader.component.WorldModifierComponent");
@@ -149,6 +177,9 @@ public final class HarpyRoleHudCompat {
     }
 
     private record ResolvedRole(MutableText name, int color, List<ModifierInfo> modifiers) {
+    }
+
+    public record RoleDisplay(MutableText name, int color) {
     }
 
     private record ModifierInfo(Text name, int color) {

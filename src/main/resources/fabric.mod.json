@@ -22,6 +22,7 @@
       ,"annawathe:life_state"
       ,"annawathe:appearance_override"
       ,"annawathe:collision_settings"
+      ,"annawathe:body_info"
     ]
   },
   "depends": {"fabricloader": ">=${loader_version}", "fabric-api": "*", "minecraft": "${minecraft_version}", "wathe": ">=1.3.2-1.21.1"}

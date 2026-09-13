@@ -20,6 +20,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import dev.annawathe.api.psycho.PsychoModeApi;
+import dev.annawathe.api.psycho.PsychoDataComponentTypes;
 
 /** AnnaWathe common/服务端入口。 */
 public final class AnnaWathe implements ModInitializer {
@@ -27,6 +29,10 @@ public final class AnnaWathe implements ModInitializer {
     public static Identifier id(String path) { return Identifier.of(MOD_ID, path); }
 
     @Override public void onInitialize() {
+        // 自定义数据组件必须在 registry 冻结前完成注册，禁止由首次购买疯魔时的静态访问触发。
+        PsychoDataComponentTypes.init();
+        // 先注册默认 profile，再允许商店和扩展在玩家连接前调用 Psycho API。
+        PsychoModeApi.init();
         // 任务点整表使用专用 S2C payload；注册必须在任何玩家连接之前完成。
         PayloadTypeRegistry.playS2C().register(TaskPointSyncPayload.ID, TaskPointSyncPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AnnaStoreBuyPayload.ID, AnnaStoreBuyPayload.CODEC);
